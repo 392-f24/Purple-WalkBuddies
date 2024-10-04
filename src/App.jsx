@@ -1,44 +1,58 @@
-import { useState } from 'react';
-import logo from './logo.svg';
+import {
+  createBrowserRouter,
+  Outlet,
+  RouterProvider,
+  Navigate,
+} from "react-router-dom";
+import { createTheme } from "@mui/material";
+import { ThemeProvider } from "@emotion/react";
+
+import BottomNav from './components/BottomNav';
+import SearchPage from './components/SearchPage';
+import ProfilePage from './components/ProfilePage';
 import './App.css';
 
-const App = () => {
-  const [count, setCount] = useState(0);
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: (
+      <div className="AppContainer">
+        <div className="AppContent">
+          <Outlet/>
+        </div>
+        <BottomNav/>
+      </div>
+    ),
+    children: [
+      {
+        path: "/",
+        element: <Navigate to="/search"/>
+      },
+      {
+        path: "search",
+        element: <SearchPage/>
+      },
+      {
+        path: "profile",
+        element: <ProfilePage/>
+      }
+    ]
+  },
+]);
 
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#907AA8"
+    }
+  }
+})
+
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello Vite + React!</p>
-        <p>
-          <button onClick={() => setCount(count => count + 1)}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.jsx</code> and save to test hot module replacement (HMR).
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-        </p>
-      </header>
-    </div>
+    <ThemeProvider theme={theme}>
+      <RouterProvider router={router} />
+    </ThemeProvider>
   );
 };
 
