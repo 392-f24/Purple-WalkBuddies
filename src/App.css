@@ -1,8 +1,15 @@
 .AppContainer {
-  width: 100vw;
-  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 .AppContent {
-  height: calc(100vh - 56px);
+  flex-grow: 1;
+}
+
+.BottomNav {
+  position: relative;
+  bottom: 0;
+  width: 100%;
 }
