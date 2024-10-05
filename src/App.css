@@ -1,11 +1,17 @@
 .AppContainer {
-  width: 100vw;
-  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 .AppContent {
-  height: calc(100vh - 56.76px);
-  overflow: auto;
+  flex-grow: 1;
+}
+
+.BottomNav {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
 }
 
 .LinearLayout {
