@@ -37,7 +37,7 @@ const ProfilePage = () => {
           paddingTop: '5px',
         }}
       >
-        WalkBuddies
+        WALKBUDDIES
       </h1>
 
       {/* Pet Information Section */}
@@ -48,8 +48,8 @@ const ProfilePage = () => {
         style={{ 
           marginTop: '-20px',
           marginBottom: "-20px", 
-          marginLeft: '10px',
-          marginRight: '10px',
+          marginLeft: '20px',
+          marginRight: '20px',
           gap: '10px', 
         }}
       >
@@ -57,11 +57,11 @@ const ProfilePage = () => {
         <Avatar 
           alt={petData.name} 
           src={petData.image} 
-          sx={{ width: 200, height: 200 }}
+          sx={{ width: 150, height: 150 }}
         />
 
         {/* Pet Information */}
-        <Paper sx={{ px: 3, py: 3, boxSizing: "border-box", mx: 1, my: 3, overflow: "auto" }} elevation={4}>
+        <Paper sx={{ px: 3, py: 3, boxSizing: "border-box", mx: 0, my: 3, overflow: "auto" }} elevation={4}>
           <Typography variant="h6" gutterBottom style={{ fontWeight: 'bold', fontSize: '25px', color: '#907AA8'}}>
             {petData.name}
           </Typography>
@@ -88,11 +88,12 @@ const ProfilePage = () => {
         mx: 1, 
         my: 3, 
         overflow: "auto",
-        marginLeft: '10px',
-        marginRight: '10px'}} 
+        paddingTop: '20px',
+        marginLeft: '20px',
+        marginRight: '20px'}} 
         elevation={4}>
         <CardTitle>Description</CardTitle>
-        <Typography variant="body1" style={{ fontSize: '12px' }}>
+        <Typography variant="body1" style={{ fontSize: '14px' }}>
           {petData.description}
         </Typography>
       </Paper>
@@ -106,9 +107,9 @@ const ProfilePage = () => {
         my: 3, 
         overflow: "auto", 
         marginTop: '10px',
-        paddingTop: '10px',
-        marginLeft: '10px',
-        marginRight: '10px'}} 
+        paddingTop: '20px',
+        marginLeft: '20px',
+        marginRight: '20px'}} 
         elevation={4} >
         <CardTitle>Traits</CardTitle>
         <Box display="flex" gap="8px" flexWrap="wrap">
@@ -116,7 +117,7 @@ const ProfilePage = () => {
             <Chip 
               key={index} 
               label={trait} 
-              style={{ backgroundColor: '#907AA8', color: 'white', fontWeight: 'bold', fontSize: '12px', marginTop: '5px'}} 
+              style={{ backgroundColor: '#907AA8', color: 'white', fontWeight: 'bold', fontSize: '14px', marginTop: '5px'}} 
             />
           ))}
         </Box>
