@@ -4,16 +4,26 @@ import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { Divider } from "@mui/material";
 
 const BottomNav = () => {
   const navigate = useNavigate();
-  const pathMatch = useMatch("/:page");
+  let page = useMatch("/:page/*");
+
+  if (page === null)
+    page = "";
+  else
+    page = page.params.page;
+
+  if (page === "walker")
+    page = "search";
 
   return (
     <Box sx={{ width: "100%" }}>
+      <Divider/>
       <BottomNavigation
         showLabels
-        value={pathMatch.params.page}
+        value={page}
         onChange={(event, newValue) => {
           navigate("/" + newValue);
         }}

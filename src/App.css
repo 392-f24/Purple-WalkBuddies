@@ -4,5 +4,20 @@
 }
 
 .AppContent {
-  height: calc(100vh - 56px);
+  height: calc(100vh - 56.76px);
+  overflow: auto;
+}
+
+.LinearLayout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.LinearLayout > * {
+  max-width: 100%;
+  overflow: auto;
 }

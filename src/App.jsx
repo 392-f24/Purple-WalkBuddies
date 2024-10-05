@@ -10,6 +10,7 @@ import { ThemeProvider } from "@emotion/react";
 import BottomNav from './components/BottomNav';
 import SearchPage from './components/SearchPage';
 import ProfilePage from './components/ProfilePage';
+import WalkerPage from './components/WalkerPage';
 import './App.css';
 
 const router = createBrowserRouter([
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
       {
         path: "profile",
         element: <ProfilePage/>
+      },
+      {
+        path: "walker/:walkerID",
+        element: <WalkerPage/>
       }
     ]
   },
