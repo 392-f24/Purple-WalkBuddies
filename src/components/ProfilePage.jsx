@@ -28,7 +28,7 @@ const ProfilePage = () => {
   });
 
   return (
-    <div className="profile-page" style={{ backgroundColor: 'white', height: '100vh', padding: '10px' }}>
+    <div className="profile-page" style={{ backgroundColor: 'white', maxHeight: '100vh', padding: '10px' }}>
       <h1 
         style={{
           color: '#907AA8',
