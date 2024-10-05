@@ -1,6 +1,7 @@
 import { Avatar, Button, Chip, Divider, Paper, Rating, Stack, Typography } from '@mui/material';
 import PageTitle from './PageTitle';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+import { useDbData } from '../firebase';
 
 const CardTitle = ({ children }) => (
   <Typography variant="h5" color="primary" sx={{ mb: 1, ":not(:first-of-type)": { mt: 3 } }}>
@@ -9,20 +10,19 @@ const CardTitle = ({ children }) => (
 )
 
 const WalkerPage = () => {
-  const profile = {
-    name: "Alice Miller",
-    picture: "https://randomuser.me/api/portraits/women/19.jpg",
-    description: "Northwestern University student Northwestern University student Northwestern University student Northwestern University student.\n\nI also have 3 dogs~",
-    contact: "123-456-7890",
-    price: 60,
-    reviews: 49,
-    rating: 4.5,
-    yearsExperience: 10,
-    location: "Evanston IL",
-    availability: "Tue 19:00-20:00",
-    preferences: ["dog", "cat", "small pets"],
-  }
+  const { walkerID } = useParams();
+  const [profile, err_profile] = useDbData(`/walkbuddies/users/${walkerID}`);
 
+  if (profile === undefined)
+    return <PageTitle/>;
+  if (profile === null) {
+    return (
+      <>
+        <PageTitle/>
+        404 Not Found
+      </>
+    );
+  }
   return (
     <>
       <div className="LinearLayout" style={{ gap: 10, padding: "0 8px", marginBottom: 30 }}>
