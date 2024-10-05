@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Typography, Box, Avatar, Chip, Paper } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import PageTitle from './PageTitle';
 
 const CardTitle = ({ children }) => (
   <Typography variant="h5" style={{ fontWeight: 'bold', fontSize: '20px', marginBottom: '5px', color: '#907AA8'}}>
@@ -28,35 +29,26 @@ const ProfilePage = () => {
   });
 
   return (
-    <div className="profile-page" style={{ backgroundColor: 'white', maxHeight: '100vh', padding: '10px' }}>
-      <h1 
-        style={{
-          color: '#907AA8',
-          textAlign: 'center',
-          marginTop: '0px',
-          paddingTop: '5px',
-        }}
-      >
-        WALKBUDDIES
-      </h1>
+    <div className="profile-page" style={{ backgroundColor: 'white', maxHeight: '100vh', padding: '10px', paddingTop: 0 }}>
+      <PageTitle/>
 
       {/* Pet Information Section */}
-      <Box 
-        display="flex" 
-        alignItems="center" 
-        justifyContent="center" 
-        style={{ 
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        style={{
           marginTop: '-20px',
-          marginBottom: "-20px", 
+          marginBottom: "-20px",
           marginLeft: '20px',
           marginRight: '20px',
-          gap: '10px', 
+          gap: '10px',
         }}
       >
         {/* Profile Picture*/}
-        <Avatar 
-          alt={petData.name} 
-          src={petData.image} 
+        <Avatar
+          alt={petData.name}
+          src={petData.image}
           sx={{ width: 150, height: 150 }}
         />
 
@@ -81,16 +73,16 @@ const ProfilePage = () => {
       </Box>
 
       {/* Description Section */}
-      <Paper sx={{ 
-        px: 3, 
-        py: 3, 
-        boxSizing: "border-box", 
-        mx: 1, 
-        my: 3, 
+      <Paper sx={{
+        px: 3,
+        py: 3,
+        boxSizing: "border-box",
+        mx: 1,
+        my: 3,
         overflow: "auto",
         paddingTop: '20px',
         marginLeft: '20px',
-        marginRight: '20px'}} 
+        marginRight: '20px'}}
         elevation={4}>
         <CardTitle>Description</CardTitle>
         <Typography variant="body1" style={{ fontSize: '14px' }}>
@@ -99,32 +91,32 @@ const ProfilePage = () => {
       </Paper>
 
       {/* Traits Section */}
-      <Paper sx={{ 
-        px: 3, 
-        py: 3, 
-        boxSizing: "border-box", 
-        mx: 1, 
-        my: 3, 
-        overflow: "auto", 
+      <Paper sx={{
+        px: 3,
+        py: 3,
+        boxSizing: "border-box",
+        mx: 1,
+        my: 3,
+        overflow: "auto",
         marginTop: '10px',
         paddingTop: '20px',
         marginLeft: '20px',
-        marginRight: '20px'}} 
+        marginRight: '20px'}}
         elevation={4} >
         <CardTitle>Traits</CardTitle>
         <Box display="flex" gap="8px" flexWrap="wrap">
           {petData.traits.map((trait, index) => (
-            <Chip 
-              key={index} 
-              label={trait} 
-              style={{ backgroundColor: '#907AA8', color: 'white', fontWeight: 'bold', fontSize: '14px', marginTop: '5px'}} 
+            <Chip
+              key={index}
+              label={trait}
+              style={{ backgroundColor: '#907AA8', color: 'white', fontWeight: 'bold', fontSize: '14px', marginTop: '5px'}}
             />
           ))}
         </Box>
       </Paper>
 
-      <Button 
-        variant="contained" 
+      <Button
+        variant="contained"
         style={{ backgroundColor: '#907AA8', color: 'white', marginTop: '10px' }}
         onClick={handleButtonClick}
       >

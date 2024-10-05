@@ -11,7 +11,7 @@ const CardTitle = ({ children }) => (
 
 const WalkerPage = () => {
   const { walkerID } = useParams();
-  const [profile, err_profile] = useDbData(`/walkbuddies/users/${walkerID}`);
+  const [profile, err_profile] = useDbData(`/walkers/${walkerID}`);
 
   if (profile === undefined)
     return <PageTitle/>;
@@ -44,7 +44,7 @@ const WalkerPage = () => {
           <ul style={{ margin: 0, paddingLeft: 30 }}>
             <li>{profile.yearsExperience} years of experience</li>
             <li>
-              <Link to={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(profile.location)}`}>
+              <Link to={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(profile.location)}`} target="_blank">
                 {profile.location}
               </Link>
             </li>

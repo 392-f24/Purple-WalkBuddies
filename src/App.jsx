@@ -27,7 +27,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <Navigate to="/search"/>
+        element: <Navigate to="/search" replace/>
       },
       {
         path: "search",

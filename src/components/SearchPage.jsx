@@ -6,58 +6,9 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import Chip from '@mui/material/Chip';
 import Rating from '@mui/material/Rating';
-import Link from '@mui/material/Link';
-
-const information = {
-  title: "WalkBuddies",
-  petWalkers: {
-    "1": {
-      "name": "Iris Rev",
-      "description": "Experienced dog walker who loves animals.",
-      "price": 25,
-      "rating": 4.8,
-      "totalTasks": 150,
-      "location": "Evanston, IL",
-      "availability": "Monday to Friday, 9 AM - 6 PM",
-      "image": "https://randomuser.me/api/portraits/women/47.jpg",
-      "preferences": ["Small dogs", "Medium dogs"]
-    },
-    "2": {
-      "name": "Annie He",
-      "description": "Cat lover with 5 years of experience in pet care.",
-      "price": 30,
-      "rating": 4.5,
-      "totalTasks": 10,
-      "location": "Evanston, IL",
-      "availability": "Weekends only",
-      "image": "https://randomuser.me/api/portraits/women/76.jpg",
-      "preferences": ["Cats", "Small dogs"]
-    },
-    "3": {
-      "name": "Emily Stas",
-      "description": "Dog trainer with over 10 years of experience.",
-      "price": 40,
-      "rating": 4.9,
-      "totalTasks": 200,
-      "location": "Evanston, IL",
-      "availability": "Monday to Saturday, 8 AM - 5 PM",
-      "image": "https://randomuser.me/api/portraits/women/27.jpg",
-      "preferences": ["All breeds"]
-    }
-  }
-};
-
-const Banner = ({title}) => (
-  <div style={{
-    display: 'flex',            // Use flexbox
-    justifyContent: 'center',   // Center horizontally
-    padding: '20px 50px 0px 50px'    
-  }}>
-    <Typography sx={{fontSize: '40px', fontWeight: 'bold'}}>
-      {title}
-    </Typography>
-  </div>
-);
+import { useDbData } from '../firebase';
+import { Link } from 'react-router-dom';
+import PageTitle from './PageTitle';
 
 const PetWalker = ({walker}) => (
   <Paper
@@ -70,12 +21,11 @@ const PetWalker = ({walker}) => (
       alignItems: 'center'
     }}
   >
-    <Avatar alt={walker.name} src={walker.image} sx={{ width: 60, height: 60, marginRight: '20px'}} />
+    <Avatar alt={walker.name} src={walker.picture} sx={{ width: 60, height: 60, marginRight: '20px'}} />
     <div>
-    <Button 
+    <Button
         variant="text"
-        onClick={() => alert(`${walker.name} clicked!`)}
-        sx={{ 
+        sx={{
           textTransform: 'none',
           padding: 0.5,
           color: '#907AA8'
@@ -88,7 +38,7 @@ const PetWalker = ({walker}) => (
         Price: ${walker.price} / hr | Rating: <Rating value={walker.rating} precision={0.1} readOnly />
       </Typography>
       <Typography variant="body2">
-        Has walked: {walker.totalTasks} times<br />
+        Has walked: {walker.reviews} times<br />
         Location: {walker.location}<br />
         Availability: {walker.availability}
       </Typography>
@@ -103,18 +53,22 @@ const PetWalker = ({walker}) => (
 
 const PetWalkerList = ({walkers}) => (
   <div className="walker-list">
-    {Object.values(walkers).map((walker) => (
-      <PetWalker key={walker.name} walker={walker} />
+    {Object.entries(walkers).map(([walkerID, walker]) => (
+      <Link to={`/walker/${walkerID}`} key={walkerID} style={{ textDecoration: 'none' }}>
+        <PetWalker walker={walker} />
+      </Link>
     ))}
   </div>
 );
 
 const SearchPage = () => {
+  const [walkers, err_walkers] = useDbData("/walkers");
+
+  if (walkers === undefined)
+    return <PageTitle/>;
   return (
     <>
-      <Button variant="text" color="primary">
-        <Banner title={information.title} />
-      </Button>
+      <PageTitle/>
       <Box
         sx={{
           display: 'flex',
@@ -127,14 +81,14 @@ const SearchPage = () => {
         <Box
           sx={{
             width: '80%',
-            maxHeight: '700px',
+            // maxHeight: '700px',
             overflowY: 'auto',
             padding: 2,
             borderRadius: 2,
             backgroundColor: '#f9f9f9',
           }}
         >
-          <PetWalkerList walkers={information.petWalkers} />
+          <PetWalkerList walkers={walkers} />
         </Box>
       </Box>
     </>

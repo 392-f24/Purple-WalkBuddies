@@ -22,7 +22,7 @@ export const useDbData = (path) => {
   const [error, setError] = useState(null);
 
   useEffect(() => (
-    onValue(ref(database, path), (snapshot) => {
+    onValue(ref(database, "/walkbuddies" + path), (snapshot) => {
      setData( snapshot.val() );
     }, (error) => {
       setError(error);
@@ -41,7 +41,7 @@ const makeResult = (error) => {
 export const useDbUpdate = (path) => {
   const [result, setResult] = useState();
   const updateData = useCallback((value) => {
-    update(ref(database, path), value)
+    update(ref(database, "/walkbuddies" + path), value)
     .then(() => setResult(makeResult()))
     .catch((error) => setResult(makeResult(error)))
   }, [database, path]);
