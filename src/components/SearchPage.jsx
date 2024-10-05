@@ -9,7 +9,7 @@ import Rating from '@mui/material/Rating';
 import Link from '@mui/material/Link';
 
 const information = {
-  title: "Walk Buddies",
+  title: "WalkBuddies",
   petWalkers: {
     "1": {
       "name": "Iris Rev",
@@ -70,7 +70,7 @@ const PetWalker = ({walker}) => (
       alignItems: 'center'
     }}
   >
-    <Avatar alt={walker.name} src={walker.image} sx={{ idth: 60, height: 60, marginRight: 2}} />
+    <Avatar alt={walker.name} src={walker.image} sx={{ width: 60, height: 60, marginRight: '20px'}} />
     <div>
     <Button 
         variant="text"
@@ -121,7 +121,7 @@ const SearchPage = () => {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: 2
+          padding: 1
         }}
       >
         <Box
