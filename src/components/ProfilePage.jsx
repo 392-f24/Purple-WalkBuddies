@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button, Typography, Box, Avatar, Chip, Paper } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import PageTitle from './PageTitle';
-import { signOut } from '../firebase';
+import { signOut, useAuthState } from '../firebase';
 
 const CardTitle = ({ children }) => (
   <Typography variant="h5" style={{ fontWeight: 'bold', fontSize: '20px', marginBottom: '5px', color: '#907AA8'}}>
@@ -18,17 +18,10 @@ const ProfilePage = () => {
   };
 
   // Simulating pet data (this will eventually come from a database)
-  const [petData, setpetData] = useState({
-    name: "Max",
-    age: 3,
-    sex: "Male",
-    breed: "Golden Retriever",
-    location: "Evanston, IL",
-    image: "./MaxProfilePic.jpg",
-    description: "Max is a gentle, friendly, and playful Golden Retriever who loves spending time with his family. He enjoys long walks, fetching balls, and is very good with children. Max was adopted from a shelter and quickly became a beloved member of the family. He has a heart of gold and is always eager to please.",
-    traits: ["Loyal", "Playful", "Good with children", "Energetic", "Allergic to Nuts"]
-  });
+  const { user: petData } = useAuthState();
 
+  if (!petData)
+    return <PageTitle/>;
   return (
     <div className="profile-page" style={{ backgroundColor: 'white', maxHeight: '100vh', padding: '10px', paddingTop: 0 }}>
       <PageTitle/>
@@ -49,7 +42,7 @@ const ProfilePage = () => {
         {/* Profile Picture*/}
         <Avatar
           alt={petData.name}
-          src={petData.image}
+          src={petData.image || "/MaxProfilePic.jpg"}
           sx={{ width: 150, height: 150 }}
         />
 
