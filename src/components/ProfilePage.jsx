@@ -99,7 +99,7 @@ const ProfilePage = () => {
         elevation={4} >
         <CardTitle>Traits</CardTitle>
         <Box display="flex" gap="8px" flexWrap="wrap">
-          {petData.traits.map((trait, index) => (
+          {(petData.traits || []).map((trait, index) => (
             <Chip
               key={index}
               label={trait}

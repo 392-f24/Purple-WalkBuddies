@@ -52,7 +52,7 @@ const WalkerPage = () => {
           </ul>
           <CardTitle>Preferences</CardTitle>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            {profile.preferences.map((e, i) =>
+            {(profile.preferences || []).map((e, i) =>
             <Chip key={i} label={e} color="primary" variant="outlined"/>)}
           </div>
         </Paper>

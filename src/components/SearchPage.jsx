@@ -43,7 +43,7 @@ const PetWalker = ({walker}) => (
         Availability: {walker.availability}
       </Typography>
       <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginTop: 4 }}>
-        {walker.preferences.map((pref, index) => (
+        {(walker.preferences || []).map((pref, index) => (
           <Chip key={index} label={pref} color="primary" variant="outlined" />
         ))}
       </div>
