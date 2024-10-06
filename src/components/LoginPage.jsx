@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Box, Typography, TextField, Paper } from '@mui/material';
+import { Stack, Button, Box, Typography, TextField, Paper, Chip, Avatar } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import PageTitle from './PageTitle';
 import { signInWithGoogle, signOut, useAuthState, useDbUpdate } from "../firebase";
@@ -36,7 +36,8 @@ const LoginPage = () => {
 
   const handleGetStarted = () => {
     update({
-      petType, name, age, sex, breed, location, description, traits
+      petType, name, age, sex, breed, location, description,
+      traits: [...new Set(traits.split(',').map(e => e.trim()).filter(e => e.length))]
     });
   };
 
@@ -49,7 +50,7 @@ const LoginPage = () => {
         justifyContent: 'center',
         height: '100vh',
         backgroundColor: '#f0f0f5',
-        padding: 5,
+        px: 5,
       }}
     >
       <Paper
@@ -96,28 +97,21 @@ const LoginPage = () => {
   return (
     <>
       <PageTitle title="Pet Onboarding" />
-      <Button
-        onClick={() => signInWithGoogle()}
-        variant="outlined"
-        sx={{
-          backgroundColor: '#907AA8',
-          color: 'white',
-          padding: '5px 10px',
-          fontSize: '14px',
-          textTransform: 'none',
-          marginBottom: 1,
-          marginLeft: 2,
-          borderRadius: '20px',
-          boxShadow: '1px 2px 3px 1px rgba(144, 122, 168, .3)',
-          '&:hover': {
-            backgroundColor: 'primary',
-          },
-        }}
-      >
-        Change Account
-      </Button>
+      <Stack direction="row" spacing={1} justifyContent="center" sx={{ flexWrap: 'wrap' }} useFlexGap>
+        <Chip
+          avatar={<Avatar alt={Guser.displayName} src={Guser.photoURL}/>}
+          label={Guser.email}
+          variant="outlined"
+        />
+        <Chip
+          label="Change Account"
+          variant="contained"
+          color="primary"
+          onClick={() => signInWithGoogle()}
+        />
+      </Stack>
 
-      
+
       <Box
         sx={{
           display: 'flex',
@@ -125,7 +119,6 @@ const LoginPage = () => {
           alignItems: 'center',
           justifyContent: 'center',
           padding: 2,
-          height: '100vh',
           backgroundColor: '#f9f9f9',
         }}
       >
