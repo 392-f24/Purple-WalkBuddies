@@ -11,6 +11,7 @@ import BottomNav from './components/BottomNav';
 import SearchPage from './components/SearchPage';
 import ProfilePage from './components/ProfilePage';
 import WalkerPage from './components/WalkerPage';
+import LoginPage from './components/LoginPage';
 import './App.css';
 
 const router = createBrowserRouter([
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
       {
         path: "walker/:walkerID",
         element: <WalkerPage/>
+      },
+      {
+        path: "login",
+        element: <LoginPage/>
       }
     ]
   },
