@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button, Typography, Box, Avatar, Chip, Paper } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import PageTitle from './PageTitle';
+import { signOut } from '../firebase';
 
 const CardTitle = ({ children }) => (
   <Typography variant="h5" style={{ fontWeight: 'bold', fontSize: '20px', marginBottom: '5px', color: '#907AA8'}}>
@@ -121,6 +122,14 @@ const ProfilePage = () => {
         onClick={handleButtonClick}
       >
         Back
+      </Button>
+      <Button
+        variant="contained"
+        style={{ backgroundColor: '#907AA8', color: 'white', marginTop: '10px' }}
+        sx={{ ml: 2 }}
+        onClick={() => signOut()}
+      >
+        Log out
       </Button>
     </div>
   );

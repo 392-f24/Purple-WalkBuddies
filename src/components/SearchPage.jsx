@@ -62,7 +62,7 @@ const PetWalkerList = ({walkers}) => (
 );
 
 const SearchPage = () => {
-  const [walkers, err_walkers] = useDbData("/walkers");
+  const [walkers, err_walkers] = useDbData("/walkers", { sync: false });
 
   if (walkers === undefined)
     return <PageTitle/>;

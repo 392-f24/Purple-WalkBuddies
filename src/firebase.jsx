@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { initializeApp } from "firebase/app";
-import { getDatabase, onValue, ref, update } from 'firebase/database';
+import { getDatabase, onValue, ref, update, get } from 'firebase/database';
+import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: "AIzaSyCaj-Y6Zscgs0DVZ7RSSZxY_b3oitQrOv8",
@@ -17,19 +18,27 @@ const firebaseConfig = {
 const firebase = initializeApp(firebaseConfig);
 const database = getDatabase(firebase);
 
-export const useDbData = (path) => {
+export const useDbData = (path, { sync = true } = {}) => {
   const [data, setData] = useState();
   const [error, setError] = useState(null);
 
-  useEffect(() => (
-    onValue(ref(database, "/walkbuddies" + path), (snapshot) => {
-     setData( snapshot.val() );
-    }, (error) => {
-      setError(error);
-    })
-  ), [ path ]);
+  useEffect(() => {
+    if (sync) {
+      return onValue(ref(database, "/walkbuddies" + path), (snapshot) => {
+        setData(snapshot.val());
+      }, (error) => {
+        setError(error);
+      });
+    } else {
+      get(ref(database, "/walkbuddies" + path)).then((snapshot) => {
+        setData(snapshot.val());
+      }).catch((error) => {
+        setError(error);
+      });
+    }
+  }, [path]);
 
-  return [ data, error ];
+  return [data, error];
 };
 
 const makeResult = (error) => {
@@ -47,4 +56,29 @@ export const useDbUpdate = (path) => {
   }, [database, path]);
 
   return [updateData, result];
+};
+
+// Google Auth
+
+export const signInWithGoogle = () => {
+  signInWithPopup(getAuth(firebase), new GoogleAuthProvider());
+};
+
+const firebaseSignOut = () => signOut(getAuth(firebase));
+
+export { firebaseSignOut as signOut };
+
+export const useAuthState = () => {
+  const [Guser, setGuser] = useState();
+  const [user, err_user] = useDbData(`/owners/${Guser?.uid}`);
+
+  useEffect(() => (
+    onAuthStateChanged(getAuth(firebase), setGuser)
+  ), []);
+
+  return {
+    Guser, user, err_user,
+    auth: Boolean(Guser && user),
+    loading: user === undefined
+  };
 };

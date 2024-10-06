@@ -11,8 +11,20 @@ import BottomNav from './components/BottomNav';
 import SearchPage from './components/SearchPage';
 import ProfilePage from './components/ProfilePage';
 import WalkerPage from './components/WalkerPage';
+import LoginPage from './components/LoginPage';
 import './App.css';
+import { useAuthState } from "./firebase";
 
+const guestRouter = createBrowserRouter([
+  {
+    path: "/login",
+    element: <LoginPage/>
+  },
+  {
+    path: "/*",
+    element: <Navigate to="/login" replace/>
+  },
+]);
 const router = createBrowserRouter([
   {
     path: "/",
@@ -40,7 +52,11 @@ const router = createBrowserRouter([
       {
         path: "walker/:walkerID",
         element: <WalkerPage/>
-      }
+      },
+      {
+        path: "/*",
+        element: <Navigate to="/" replace/>
+      },
     ]
   },
 ]);
@@ -54,9 +70,12 @@ const theme = createTheme({
 })
 
 const App = () => {
+  const { loading, auth } = useAuthState();
+
+  if (loading) return "";
   return (
     <ThemeProvider theme={theme}>
-      <RouterProvider router={router} />
+      <RouterProvider router={auth ? router : guestRouter} />
     </ThemeProvider>
   );
 };
