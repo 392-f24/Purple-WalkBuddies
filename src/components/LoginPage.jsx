@@ -41,13 +41,83 @@ const LoginPage = () => {
   };
 
   if (!Guser) return (
-    <Button onClick={() => signInWithGoogle()}>Log in</Button>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100vh',
+        backgroundColor: '#f0f0f5',
+        padding: 5,
+      }}
+    >
+      <Paper
+        elevation={4}
+        sx={{
+          padding: 4,
+          borderRadius: 2,
+          width: '100%',
+          maxWidth: '450px',
+          textAlign: 'center',
+          boxShadow: '2px 4px 6px rgba(144, 122, 168, .3)',
+        }}
+      >
+        <Typography variant="h4" sx={{ color: '#907AA8', fontWeight: 'bold', mb: 2 }}>
+          Welcome to WalkBuddies
+        </Typography>
+
+        <Typography variant="body1" sx={{ mb: 3, color: '#555' }}>
+          Log in to get started and find your personal dog walker.
+        </Typography>
+
+        <Button
+          onClick={() => signInWithGoogle()}
+          variant="contained"
+          sx={{
+            backgroundColor: '#907AA8',
+            color: 'white',
+            padding: '12px 24px',
+            fontSize: '16px',
+            textTransform: 'none',
+            borderRadius: '25px',
+            transition: 'background-color 0.3s ease',
+            '&:hover': {
+              backgroundColor: '#795DA8',
+            },
+          }}
+        >
+          Log in with Google
+        </Button>
+      </Paper>
+    </Box>
   );
 
   return (
     <>
       <PageTitle title="Pet Onboarding" />
-      <Button onClick={() => signInWithGoogle()}>Change account</Button>
+      <Button
+        onClick={() => signInWithGoogle()}
+        variant="outlined"
+        sx={{
+          backgroundColor: '#907AA8',
+          color: 'white',
+          padding: '5px 10px',
+          fontSize: '14px',
+          textTransform: 'none',
+          marginBottom: 1,
+          marginLeft: 2,
+          borderRadius: '20px',
+          boxShadow: '1px 2px 3px 1px rgba(144, 122, 168, .3)',
+          '&:hover': {
+            backgroundColor: 'primary',
+          },
+        }}
+      >
+        Change Account
+      </Button>
+
+      
       <Box
         sx={{
           display: 'flex',

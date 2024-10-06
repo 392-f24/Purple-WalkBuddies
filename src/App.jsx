@@ -6,6 +6,7 @@ import {
 } from "react-router-dom";
 import { createTheme } from "@mui/material";
 import { ThemeProvider } from "@emotion/react";
+import React, { useState } from 'react';
 
 import BottomNav from './components/BottomNav';
 import SearchPage from './components/SearchPage';
