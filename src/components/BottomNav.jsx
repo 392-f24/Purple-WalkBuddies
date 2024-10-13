@@ -4,6 +4,7 @@ import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import GroupIcon from '@mui/icons-material/Group';
 import { Divider } from "@mui/material";
 
 const BottomNav = () => {
@@ -29,6 +30,7 @@ const BottomNav = () => {
         }}
       >
         <BottomNavigationAction value="search" label="Search" icon={<SearchIcon/>}/>
+        <BottomNavigationAction value="matches" label="Matches" icon={<GroupIcon/>}/>
         <BottomNavigationAction value="profile" label="Profile" icon={<AccountCircleIcon/>}/>
       </BottomNavigation>
     </Box>

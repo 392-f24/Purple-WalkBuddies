@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Typography, Box, Avatar, Chip, Paper } from '@mui/material';
+import { Button, Typography, Box, Avatar, Chip, Paper, Stack } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import PageTitle from './PageTitle';
 import { signOut, useAuthState } from '../firebase';
@@ -109,21 +109,23 @@ const ProfilePage = () => {
         </Box>
       </Paper>
 
-      <Button
-        variant="contained"
-        style={{ backgroundColor: '#907AA8', color: 'white', marginTop: '10px' }}
-        onClick={handleButtonClick}
-      >
-        Back
-      </Button>
-      <Button
-        variant="contained"
-        style={{ backgroundColor: '#907AA8', color: 'white', marginTop: '10px' }}
-        sx={{ ml: 2 }}
-        onClick={() => signOut()}
-      >
-        Log out
-      </Button>
+      <Stack direction="row" spacing={2}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleButtonClick}
+        >
+          Back
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{ ml: 2 }}
+          onClick={() => signOut()}
+        >
+          Log out
+        </Button>
+      </Stack>
     </div>
   );
 };

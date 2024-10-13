@@ -1,7 +1,11 @@
-import { Avatar, Button, Chip, Divider, Paper, Rating, Stack, Typography } from '@mui/material';
+import { TextField, Box, Modal, Avatar, Button, Chip, Divider, Paper, Rating, Stack, Typography } from '@mui/material';
 import PageTitle from './PageTitle';
-import { Link, useParams } from 'react-router-dom';
-import { useDbData } from '../firebase';
+import { Link, useParams, useNavigate } from 'react-router-dom';
+import { useDbData, useAuthState, useDbUpdate } from '../firebase';
+import { useState } from 'react';
+import DurationParser from 'js-duration-parser';
+
+const durationParser = new DurationParser();
 
 const CardTitle = ({ children }) => (
   <Typography variant="h5" color="primary" sx={{ mb: 1, ":not(:first-of-type)": { mt: 3 } }}>
@@ -10,8 +14,18 @@ const CardTitle = ({ children }) => (
 )
 
 const WalkerPage = () => {
+  const navigate = useNavigate()
   const { walkerID } = useParams();
+  const { Guser } = useAuthState();
   const [profile, err_profile] = useDbData(`/walkers/${walkerID}`);
+  const [update_walker, result_walker] = useDbUpdate(`/walkers/${walkerID}/matches`);
+  const [update_owner, result_owner] = useDbUpdate(`/owners/${Guser?.uid}/matches`);
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [startDate, setStartDate] = useState(new Date().toLocaleDateString('en-CA'));
+  const [startTime, setStartTime] = useState(new Date().toTimeString().slice(0, 5));
+  const [duration, setDuration] = useState("");
+  const parsedDuration = durationParser.parse(duration);
 
   if (profile === undefined)
     return <PageTitle/>;
@@ -56,10 +70,77 @@ const WalkerPage = () => {
             <Chip key={i} label={e} color="primary" variant="outlined"/>)}
           </div>
         </Paper>
-        <Link to={`tel:${profile.contact}`}>
-          <Button variant="contained">Contact</Button>
-        </Link>
+        <Stack direction="row" spacing={2}>
+          <Link to={`tel:${profile.contact}`}>
+            <Button variant="contained">Contact</Button>
+          </Link>
+          <Button variant="contained" onClick={() => setModalOpen(true)}>Match Request</Button>
+        </Stack>
       </div>
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+        <Box sx={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: 400,
+          bgcolor: 'background.paper',
+          border: '2px solid #000',
+          boxShadow: 24,
+          p: 4,
+        }}>
+          <Stack spacing={2}>
+            <Typography variant="h6" component="h2">
+              Please enter the match time
+            </Typography>
+            <Stack direction="row">
+              <TextField
+                label="Date"
+                size="small"
+                sx={{ width: '50%', pr: 0.5 }}
+                autoComplete="off"
+                type="date"
+                variant="outlined"
+                value={startDate}
+                onChange={e => setStartDate(e.target.value)}
+              />
+              <TextField
+                label="Time"
+                size="small"
+                sx={{ width: '50%', pl: 0.5 }}
+                autoComplete="off"
+                type="time"
+                variant="outlined"
+                value={startTime}
+                onChange={e => setStartTime(e.target.value)}
+              />
+            </Stack>
+            <TextField
+              label="Duration (?d ?h ?m)"
+              error={!parsedDuration}
+              helperText={!parsedDuration ? "Please enter a valid date" : `= ${parseInt(parsedDuration)} minutes`}
+              placeholder="_d _h _m"
+              size="small"
+              autoComplete="off"
+              type="text"
+              variant="outlined"
+              value={duration}
+              onChange={e => setDuration(e.target.value)}
+            />
+            <Button variant="contained" disabled={!parsedDuration} onClick={() => {
+              if (window.confirm("Be sure to contact the pet walker while you request a match.\n\nDo you want to send the request?")) {
+                const reference = update_walker({
+                  time: new Date(startDate + " " + startTime).getTime(), duration: parsedDuration
+                }, { push: true });
+                const index = update_owner({
+                  index: reference.key, walker: walkerID
+                }, { push: true });
+                navigate(`/matches/${index.key}`);
+              }
+            }}>Match</Button>
+          </Stack>
+        </Box>
+      </Modal>
     </>
   );
 }

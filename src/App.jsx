@@ -12,6 +12,8 @@ import SearchPage from './components/SearchPage';
 import ProfilePage from './components/ProfilePage';
 import WalkerPage from './components/WalkerPage';
 import LoginPage from './components/LoginPage';
+import MatchesPage from './components/MatchesPage';
+import MatchPage from './components/MatchPage';
 import './App.css';
 import { useAuthState } from "./firebase";
 
@@ -44,6 +46,14 @@ const router = createBrowserRouter([
       {
         path: "search",
         element: <SearchPage/>
+      },
+      {
+        path: "matches",
+        element: <MatchesPage/>
+      },
+      {
+        path: "matches/:matchID",
+        element: <MatchPage/>
       },
       {
         path: "profile",

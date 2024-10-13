@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { initializeApp } from "firebase/app";
-import { getDatabase, onValue, ref, update, get } from 'firebase/database';
+import { getDatabase, onValue, ref, update, get, push } from 'firebase/database';
 import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
 
 const firebaseConfig = {
@@ -23,6 +23,7 @@ export const useDbData = (path, { sync = true } = {}) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    if (!path) return;
     if (sync) {
       return onValue(ref(database, "/walkbuddies" + path), (snapshot) => {
         setData(snapshot.val());
@@ -38,6 +39,7 @@ export const useDbData = (path, { sync = true } = {}) => {
     }
   }, [path]);
 
+  if (path === null) return [null, null];
   return [data, error];
 };
 
@@ -49,10 +51,12 @@ const makeResult = (error) => {
 
 export const useDbUpdate = (path) => {
   const [result, setResult] = useState();
-  const updateData = useCallback((value) => {
-    update(ref(database, "/walkbuddies" + path), value)
+  const updateData = useCallback((value, { push: _push = false }={}) => {
+    const reference = _push ? push(ref(database, "/walkbuddies" + path)) : ref(database, "/walkbuddies" + path);
+    update(reference, value)
     .then(() => setResult(makeResult()))
-    .catch((error) => setResult(makeResult(error)))
+    .catch((error) => setResult(makeResult(error)));
+    return reference;
   }, [database, path]);
 
   return [updateData, result];
@@ -72,6 +76,7 @@ export const useAuthState = () => {
   const [Guser, setGuser] = useState();
   const [user, err_user] = useDbData(`/owners/${Guser?.uid}`);
 
+  // useEffect(() => console.log(Guser), [Guser]);
   useEffect(() => (
     onAuthStateChanged(getAuth(firebase), setGuser)
   ), []);
