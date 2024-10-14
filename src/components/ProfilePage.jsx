@@ -23,7 +23,7 @@ const ProfilePage = () => {
   if (!petData)
     return <PageTitle/>;
   return (
-    <div className="profile-page" style={{ backgroundColor: 'white', maxHeight: '100vh', padding: '10px', paddingTop: 0 }}>
+    <div style={{ backgroundColor: 'white', maxHeight: '100vh', padding: '10px', paddingTop: 0 }}>
       <PageTitle/>
 
       {/* Pet Information Section */}

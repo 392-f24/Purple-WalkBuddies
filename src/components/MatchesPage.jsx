@@ -1,18 +1,23 @@
 import { Avatar, Button, Chip, Divider, Paper, Rating, Stack, Typography } from '@mui/material';
 import PageTitle from './PageTitle';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useAuthState, useDbData, useDbUpdate } from '../firebase';
 import { useMemo } from 'react';
 
-const MatchItem = ({ matchPath, id, data }) => {
+const MatchItem = ({ matchPath, id, data, review }) => {
+  const navigate = useNavigate();
   const [match, err_match] = useDbData(`/walkers/${matchPath.walker}/matches/${matchPath.index}`);
   return (
-    <Link to={`${id}`}>
-      <h3>{JSON.stringify(matchPath)}</h3>
+    <>
+      <Link to={`${id}`}>
+        <h3>{JSON.stringify(matchPath)}</h3>
+      </Link>
       <p>{new Date(data.time).toString()}</p>
       <p>{new Date(data.endTime).toString()}</p>
       <p>{JSON.stringify(match)}</p>
-    </Link>
+      {review &&
+        <Button variant="contained" onClick={() => navigate(`${id}`)}>Go review</Button>}
+    </>
   );
 }
 
@@ -65,7 +70,7 @@ const MatchesPage = () => {
       {matchObjects.filter(
         match => match.data.accepted && match.data.endTime < now
       ).map(
-        m => <MatchItem key={m.id} matchPath={m.path} id={m.id} data={m.data} />
+        m => <MatchItem key={m.id} matchPath={m.path} id={m.id} data={m.data} review/>
       )}
     </>
   );
