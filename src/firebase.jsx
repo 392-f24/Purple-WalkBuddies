@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { initializeApp } from "firebase/app";
 import { getDatabase, onValue, ref, update, get, push } from 'firebase/database';
 import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
@@ -18,30 +18,60 @@ const firebaseConfig = {
 const firebase = initializeApp(firebaseConfig);
 const database = getDatabase(firebase);
 
-export const useDbData = (path, { sync = true } = {}) => {
-  const [data, setData] = useState();
-  const [error, setError] = useState(null);
+const _useDbData = (paths, { sync = true } = {}) => {
+  const [data, setData] = useState([]);
+  const [error, setError] = useState([]);
 
   useEffect(() => {
-    if (!path) return;
-    if (sync) {
-      return onValue(ref(database, "/walkbuddies" + path), (snapshot) => {
-        setData(snapshot.val());
-      }, (error) => {
-        setError(error);
-      });
-    } else {
-      get(ref(database, "/walkbuddies" + path)).then((snapshot) => {
-        setData(snapshot.val());
-      }).catch((error) => {
-        setError(error);
-      });
-    }
-  }, [path]);
+    setData(d => {
+      if (d.length === paths.length) return d;
+      if (d.length > paths.length)
+        return d.slice(0, paths.length);
+      else
+      return [...d, ...new Array(paths.length - d.length).fill(undefined)];
+    });
+    setError(e => {
+      if (e.length === paths.length) return e;
+      if (e.length > paths.length)
+        return e.slice(0, paths.length);
+      else
+      return [...e, ...new Array(paths.length - e.length).fill(null)];
+    });
+  }, [paths.length]);
 
-  if (path === null) return [null, null];
+  useEffect(() => {
+    const callbacks = paths.map((p, idx) => {
+      const setMyData = myData => setData(d => d.map((e, i) => i === idx ? myData : e));
+      const setMyError = myError => setError(err => err.map((e, i) => i === idx ? myError : e));
+      if (!p) {
+        setMyData(null);
+        setMyError(null);
+      }
+      if (sync) {
+        return onValue(ref(database, "/walkbuddies" + p), (snapshot) => {
+          setMyData(snapshot.val());
+        }, (error) => {
+          setMyError(error);
+        });
+      } else {
+        get(ref(database, "/walkbuddies" + p)).then((snapshot) => {
+          setMyData(snapshot.val());
+        }).catch((error) => {
+          setMyError(error);
+        });
+      }
+    });
+    return (...args) => callbacks.forEach(f => f && f(...args));
+  }, [paths]);
+
   return [data, error];
 };
+
+export const useDbData = (path, ...args) => {
+  const paths = useMemo(() => Array.isArray(path) ? path : [path], [path]);
+  const res = _useDbData(paths, ...args);
+  return Array.isArray(path) ? res : res.map(e => e[0]);
+}
 
 const makeResult = (error) => {
   const timestamp = Date.now();
