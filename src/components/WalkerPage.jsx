@@ -1,4 +1,5 @@
 import { TextField, Box, Modal, Avatar, Button, Chip, Divider, Paper, Rating, Stack, Typography } from '@mui/material';
+import CheckIcon from '@mui/icons-material/Check';
 import PageTitle from './PageTitle';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useDbData, useAuthState, useDbUpdate } from '../firebase';
@@ -69,6 +70,30 @@ const WalkerPage = () => {
             {(profile.preferences || []).map((e, i) =>
             <Chip key={i} label={e} color="primary" variant="outlined"/>)}
           </div>
+          <CardTitle>Availability</CardTitle>
+          <table style={{ width: '100%' }}>
+            <thead>
+              <tr>
+                <th></th>
+                <th style={{ width: '40px' }}>Sun</th>
+                <th style={{ width: '40px' }}>Mon</th>
+                <th style={{ width: '40px' }}>Tue</th>
+                <th style={{ width: '40px' }}>Wed</th>
+                <th style={{ width: '40px' }}>Thu</th>
+                <th style={{ width: '40px' }}>Fri</th>
+                <th style={{ width: '40px' }}>Sat</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[0, 1, 2].map(i =>
+                <tr>
+                  <td style={{ height: '28px' }}>{["Morning", "Afternoon", "Night"][i]}</td>
+                  {profile.availability.map((e, idx) =>
+                    <td key={idx} style={{ textAlign: "center" }}>{e[i] ? <CheckIcon color="success"/> : ""}</td>)}
+                </tr>
+              )}
+            </tbody>
+          </table>
         </Paper>
         <Stack direction="row" spacing={2}>
           <Link to={`tel:${profile.contact}`}>

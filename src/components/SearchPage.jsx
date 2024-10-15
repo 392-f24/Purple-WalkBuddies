@@ -9,6 +9,9 @@ import Rating from '@mui/material/Rating';
 import { useDbData } from '../firebase';
 import { Link } from 'react-router-dom';
 import PageTitle from './PageTitle';
+import { Stack } from '@mui/material';
+
+const week = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 const PetWalker = ({walker}) => (
   <Paper
@@ -17,34 +20,27 @@ const PetWalker = ({walker}) => (
       padding: 2,
       marginBottom: 2,
       borderRadius: 2,
-      width: '90%',
       alignItems: 'center'
     }}
   >
     <Avatar alt={walker.name} src={walker.picture} sx={{ width: 60, height: 60, marginRight: '20px'}} />
     <div>
-    <Button
-        variant="text"
-        sx={{
-          textTransform: 'none',
-          padding: 0.5,
-          color: '#907AA8'
-        }}
-      >
-        <Typography variant="h6">{walker.name}</Typography>
-    </Button>
+      <Typography variant="h6" color="primary">{walker.name}</Typography>
       <Typography variant="body2">{walker.description}</Typography>
+      <Stack direction="row" spacing={0.5}>
+        <Typography variant="body2">
+          Price: ${walker.price} / hr | Rating:
+        </Typography>
+        <Rating value={walker.rating} precision={0.1} readOnly size="small"/>
+      </Stack>
       <Typography variant="body2">
-        Price: ${walker.price} / hr | Rating: <Rating value={walker.rating} precision={0.1} readOnly />
-      </Typography>
-      <Typography variant="body2">
-        Has walked: {walker.reviews} times<br />
+        {walker.reviews} matches in Walk Buddies<br />
         Location: {walker.location}<br />
-        Availability: {walker.availability}
+        Available on: {week.filter((e, i) => walker.availability[i].some(e => e)).join(' ')}
       </Typography>
       <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginTop: 4 }}>
         {(walker.preferences || []).map((pref, index) => (
-          <Chip key={index} label={pref} color="primary" variant="outlined" />
+          <Chip key={index} label={pref} color="primary" variant="outlined" size="small"/>
         ))}
       </div>
     </div>
