@@ -39,3 +39,14 @@ export function getCalendarLink(match, matchID, walker) {
   // params.append("add", Object.keys(meet.collection).join(","));
   return "https://www.google.com/calendar/render?" + params;
 }
+
+export function wrapProfile(p) {
+  if (!p) return p;
+  if (!p.matches) return { ...p, reviews: 0, rating: null };
+  const res = { ...p };
+  res.reviews = Object.values(p.matches).filter(m => getMatchStatus(m) === "past" && (m.comment?.length || m.rating)).length;
+  const all_ratings = Object.values(p.matches).map(m => m?.rating).filter(m => m);
+  res.rating = all_ratings.reduce((a, c) => a + c, 0) / all_ratings.length;
+  console.log(res);
+  return res;
+}

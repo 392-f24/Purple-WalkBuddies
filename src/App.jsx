@@ -14,6 +14,7 @@ import WalkerPage from './components/WalkerPage';
 import LoginPage from './components/LoginPage';
 import MatchesPage from './components/MatchesPage';
 import MatchPage from './components/MatchPage';
+import ReviewsPage from './components/ReviewsPage';
 import './App.css';
 import { useAuthState } from "./firebase";
 
@@ -62,6 +63,10 @@ const router = createBrowserRouter([
       {
         path: "walker/:walkerID",
         element: <WalkerPage/>
+      },
+      {
+        path: "walker/:walkerID/reviews",
+        element: <ReviewsPage/>
       },
       {
         path: "/*",

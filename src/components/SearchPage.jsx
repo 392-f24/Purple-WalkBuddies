@@ -8,7 +8,9 @@ import Rating from '@mui/material/Rating';
 import { useDbData } from '../firebase';
 import { Link } from 'react-router-dom';
 import PageTitle from './PageTitle';
-import { Stack } from '@mui/material';
+import { Button, IconButton, Stack } from '@mui/material';
+import { Tune } from '@mui/icons-material';
+import { wrapProfile } from '../utils';
 
 const week = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -26,7 +28,7 @@ const PetWalker = ({walker}) => (
     <div>
       <Typography variant="h6" color="primary">{walker.name}</Typography>
       <Typography variant="body2" sx={{ mb: 0.6 }}>{walker.description}</Typography>
-      <Stack direction="row" spacing={0.5}>
+      <Stack direction="row" spacing={0.5} alignItems="center">
         <Typography variant="body2">
           Price: ${walker.price} / hr | Rating:
         </Typography>
@@ -57,13 +59,21 @@ const PetWalkerList = ({walkers}) => (
 );
 
 const SearchPage = () => {
-  const [walkers, err_walkers] = useDbData("/walkers", { sync: false });
+  const [walkers, err_walkers] = useDbData("/walkers", {
+    sync: false,
+    postProcess: obj => obj && Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, wrapProfile(v)]))
+  });
 
   if (walkers === undefined)
     return <PageTitle/>;
   return (
     <>
       <PageTitle/>
+      <div style={{ textAlign: "right", marginRight: 8 }}>
+        <Button endIcon={<Tune/>}>
+          Filter
+        </Button>
+      </div>
       <Box
         sx={{
           display: 'flex',

@@ -5,6 +5,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useDbData, useAuthState, useDbUpdate } from '../firebase';
 import { useState } from 'react';
 import DurationParser from 'js-duration-parser';
+import { wrapProfile } from '../utils';
 
 const durationParser = new DurationParser();
 
@@ -18,7 +19,7 @@ const WalkerPage = () => {
   const navigate = useNavigate()
   const { walkerID } = useParams();
   const { Guser } = useAuthState();
-  const [profile, err_profile] = useDbData(`/walkers/${walkerID}`);
+  const [profile, err_profile] = useDbData(`/walkers/${walkerID}`, { postProcess: wrapProfile });
   const [update_walker, result_walker] = useDbUpdate(`/walkers/${walkerID}/matches`);
   const [update_owner, result_owner] = useDbUpdate(`/owners/${Guser?.uid}/matches`);
 
@@ -48,7 +49,8 @@ const WalkerPage = () => {
         </Typography>
         <Rating value={profile.rating} precision={0.1} readOnly/>
         <span>
-          {profile.rating.toFixed(2)} ⭐&nbsp;&nbsp;&nbsp;<Link>{profile.reviews} reviews</Link>
+          {profile.rating ? `${profile.rating.toFixed(2)} ⭐` : 'No ratings'}
+          &nbsp;&nbsp;&nbsp;<Link to={`/walker/${walkerID}/reviews`}>{profile.reviews} reviews</Link>
         </span>
         <Paper sx={{ px: 3, py: 3, boxSizing: "border-box", mx: 1, my: 3, overflow: "auto" }} elevation={4}>
           <CardTitle>Description</CardTitle>
@@ -86,7 +88,7 @@ const WalkerPage = () => {
             </thead>
             <tbody>
               {[0, 1, 2].map(i =>
-                <tr>
+                <tr key={i}>
                   <td style={{ height: '28px' }}>{["Morning", "Afternoon", "Night"][i]}</td>
                   {profile.availability.map((e, idx) =>
                     <td key={idx} style={{ textAlign: "center" }}>{e[i] ? <CheckIcon color="success"/> : ""}</td>)}

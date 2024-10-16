@@ -5,7 +5,7 @@ import PageTitle from './PageTitle';
 import { Link, useParams } from 'react-router-dom';
 import { useAuthState, useDbData, useDbUpdate } from '../firebase';
 import { useEffect, useState } from 'react';
-import { wrapMatch, getCalendarLink } from '../utils';
+import { wrapMatch, getCalendarLink, wrapProfile } from '../utils';
 
 const CardTitle = ({ children }) => (
   <Typography variant="h5" color="primary" sx={{ mb: 1, ":not(:first-of-type)": { mt: 3 } }}>
@@ -22,14 +22,14 @@ const MatchPage = () => {
     postProcess: m => m && wrapMatch(m, now.getTime())
   });
   const [update, result] = useDbUpdate(matchPath && `/walkers/${matchPath.walker}/matches/${matchPath.index}`);
-  const [walker, err_walker] = useDbData(matchPath && `/walkers/${matchPath.walker}`,);
+  const [walker, err_walker] = useDbData(matchPath && `/walkers/${matchPath.walker}`, { postProcess: wrapProfile });
   const [comment, setComment] = useState("");
   const [rating, setRating] = useState(null);
 
   useEffect(() => {
     if (match) {
       setComment(match.comment || "");
-      setRating(match.rating);
+      setRating(match.rating || null);
     }
   }, [match]);
 
@@ -72,11 +72,11 @@ const MatchPage = () => {
               <Avatar alt={walker.name} src={walker.picture}/>
             </ListItemAvatar>
             <ListItemText primary={walker.name} secondary={
-              <>{walker.rating.toFixed(2)} ⭐&nbsp;&nbsp;<Link>{walker.reviews} reviews</Link></>
+              <>{walker.rating ? `${walker.rating.toFixed(2)} ⭐` : "No ratings"}&nbsp;&nbsp;<Link to={`/walker/${matchPath.walker}/reviews`}>{walker.reviews} reviews</Link></>
             }/>
           </ListItem>
           <CardTitle>Scheduled Time</CardTitle>
-          <Stack spacing={2}>
+          <Stack spacing={2} alignItems="center">
             <Stack spacing={1} alignItems="center" justifyContent="space-between" direction="row">
               <Chip variant="outlined" label={`${new Date(match.time).toTimeString().slice(0, 5)} ${new Date(match.time).toDateString()}`}/>
               <KeyboardDoubleArrowRightIcon/>
