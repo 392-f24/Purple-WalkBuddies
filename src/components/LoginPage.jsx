@@ -6,7 +6,8 @@ import { signInWithGoogle, signOut, useAuthState, useDbUpdate } from "../firebas
 import FileUpload from './FileUpload';
 
 const LoginPage = () => {
- const [petType, setPetType] = useState('');
+  const [file, setFile] = useState(null);
+  const [petType, setPetType] = useState('');
  const [name, setName] = useState('');
  const [age, setAge] = useState('');
  const [sex, setSex] = useState('');
@@ -128,7 +129,7 @@ const LoginPage = () => {
      </Button>
 
 
-    
+
      <Box
        sx={{
          display: 'flex',
@@ -195,8 +196,8 @@ const LoginPage = () => {
            Upload Profile Picture:
          </Typography>
 
-         <FileUpload onUpload={handleProfilePicChange} />
-        
+         <FileUpload onUpload={handleProfilePicChange} file={file} setFile={setFile} />
+
          <TextField
            label="Name"
            variant="outlined"
@@ -269,7 +270,7 @@ const LoginPage = () => {
            onChange={(e) => setTraits(e.target.value)}
            helperText="e.g., Loyal, Playful, Energetic"
          />
-        
+
          <Button
            variant="contained"
            color="primary"

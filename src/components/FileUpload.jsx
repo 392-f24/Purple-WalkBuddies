@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { getStorage, ref, uploadString } from 'firebase/storage';
 
-const FileUpload = () => {
-   const [file, setFile] = useState(null);
+const FileUpload = ({ file, setFile }) => {
 
    const handleFileChange = (event) => {
        setFile(event.target.files[0]);
