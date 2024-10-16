@@ -5,7 +5,7 @@ import PageTitle from './PageTitle';
 import { Link, useParams } from 'react-router-dom';
 import { useAuthState, useDbData, useDbUpdate } from '../firebase';
 import { useEffect, useState } from 'react';
-import { wrapMatch } from '../utils';
+import { wrapMatch, getCalendarLink } from '../utils';
 
 const CardTitle = ({ children }) => (
   <Typography variant="h5" color="primary" sx={{ mb: 1, ":not(:first-of-type)": { mt: 3 } }}>
@@ -76,10 +76,24 @@ const MatchPage = () => {
             }/>
           </ListItem>
           <CardTitle>Scheduled Time</CardTitle>
-          <Stack spacing={1} alignItems="center" justifyContent="space-between" direction="row">
-            <Chip variant="outlined" label={`${new Date(match.time).toTimeString().slice(0, 5)} ${new Date(match.time).toDateString()}`}/>
-            <KeyboardDoubleArrowRightIcon/>
-            <Chip variant="outlined" label={`${new Date(match.endTime).toTimeString().slice(0, 5)} ${new Date(match.endTime).toDateString()}`}/>
+          <Stack spacing={2}>
+            <Stack spacing={1} alignItems="center" justifyContent="space-between" direction="row">
+              <Chip variant="outlined" label={`${new Date(match.time).toTimeString().slice(0, 5)} ${new Date(match.time).toDateString()}`}/>
+              <KeyboardDoubleArrowRightIcon/>
+              <Chip variant="outlined" label={`${new Date(match.endTime).toTimeString().slice(0, 5)} ${new Date(match.endTime).toDateString()}`}/>
+            </Stack>
+            <Chip
+              icon={
+                <img
+                  width="22" height="22" alt="Google Calendar Icon"
+                  src={`https://ssl.gstatic.com/calendar/images/dynamiclogo_2020q4/calendar_${new Date(match.time).getDate()}_2x.png`}
+                />
+              }
+              label="Create Google Calendar event"
+              variant="contained"
+              color="primary"
+              onClick={() => window.open(getCalendarLink(match, matchID, walker))}
+            />
           </Stack>
         </Paper>
         {match.accepted === true && now.getTime() > match.time + match.duration * 60 * 1000 &&
