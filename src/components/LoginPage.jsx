@@ -38,7 +38,7 @@ const LoginPage = () => {
  const handleGetStarted = () => {
    update({
      petType, name, age, sex, breed, location, description, traits,
-     profilePic
+     profilePic: "https://firebasestorage.googleapis.com/v0/b/nu-cs392-thomaswang.appspot.com/o/" + file.name + "?alt=media"
    });
  };
 
