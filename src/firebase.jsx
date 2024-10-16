@@ -18,7 +18,7 @@ const firebaseConfig = {
 const firebase = initializeApp(firebaseConfig);
 const database = getDatabase(firebase);
 
-const _useDbData = (paths, { sync = true } = {}) => {
+const _useDbData = (paths, { sync = true, postProcess = e => e } = {}) => {
   const [data, setData] = useState([]);
   const [error, setError] = useState([]);
 
@@ -41,7 +41,7 @@ const _useDbData = (paths, { sync = true } = {}) => {
 
   useEffect(() => {
     const callbacks = paths.map((p, idx) => {
-      const setMyData = myData => setData(d => d.map((e, i) => i === idx ? myData : e));
+      const setMyData = myData => setData(d => d.map((e, i) => i === idx ? postProcess(myData) : e));
       const setMyError = myError => setError(err => err.map((e, i) => i === idx ? myError : e));
       if (!p) {
         setMyData(null);

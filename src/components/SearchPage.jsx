@@ -1,5 +1,4 @@
 import React from 'react';
-import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
@@ -26,7 +25,7 @@ const PetWalker = ({walker}) => (
     <Avatar alt={walker.name} src={walker.picture} sx={{ width: 60, height: 60, marginRight: '20px'}} />
     <div>
       <Typography variant="h6" color="primary">{walker.name}</Typography>
-      <Typography variant="body2">{walker.description}</Typography>
+      <Typography variant="body2" sx={{ mb: 0.6 }}>{walker.description}</Typography>
       <Stack direction="row" spacing={0.5}>
         <Typography variant="body2">
           Price: ${walker.price} / hr | Rating:
@@ -76,7 +75,7 @@ const SearchPage = () => {
       >
         <Box
           sx={{
-            width: '80%',
+            width: '95%',
             // maxHeight: '700px',
             overflowY: 'auto',
             padding: 2,

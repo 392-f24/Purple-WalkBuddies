@@ -1,8 +1,9 @@
-import { Avatar, Button, Chip, Divider, Paper, Rating, Stack, Typography } from '@mui/material';
+import { Button } from '@mui/material';
 import PageTitle from './PageTitle';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { useAuthState, useDbData, useDbUpdate } from '../firebase';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuthState, useDbData } from '../firebase';
 import { useMemo } from 'react';
+import { wrapMatch } from '../utils';
 
 const MatchItem = ({ matchPath, id, data, review }) => {
   const navigate = useNavigate();
@@ -31,9 +32,7 @@ const MatchesPage = () => {
   const [matchList, err_matchList] = useDbData(matches && matchPaths);
   const matchObjects = useMemo(() => matchList && Object.entries(matches).map(
     ([matchID, path], i) => (matchList[i] ? {
-      path, id: matchID, data: {
-        ...matchList[i], endTime: matchList[i].time + matchList[i].duration * 60 * 1000
-      }
+      path, id: matchID, data: wrapMatch(matchList[i])
     } : null)
   ).filter(e => e), [matches, matchList]);
 
@@ -51,25 +50,19 @@ const MatchesPage = () => {
     <>
       <PageTitle/>
       <h2>Pending Requests</h2>
-      {matchObjects.filter(match => match.data.accepted !== true).map(
+      {matchObjects.filter(match => match.data.status === "pending").map(
         m => <MatchItem key={m.id} matchPath={m.path} id={m.id} data={m.data} />
       )}
       <h2>Ongoing Matches</h2>
-      {matchObjects.filter(
-        match => match.data.accepted && match.data.time <= now && now <= match.data.endTime
-      ).map(
+      {matchObjects.filter(match => match.data.status === "ongoing").map(
         m => <MatchItem key={m.id} matchPath={m.path} id={m.id} data={m.data} />
       )}
       <h2>Scheduled Matches</h2>
-      {matchObjects.filter(
-        match => match.data.accepted && now < match.data.time
-      ).map(
+      {matchObjects.filter(match => match.data.status === "future").map(
         m => <MatchItem key={m.id} matchPath={m.path} id={m.id} data={m.data} />
       )}
       <h2>Past Matches</h2>
-      {matchObjects.filter(
-        match => match.data.accepted && match.data.endTime < now
-      ).map(
+      {matchObjects.filter(match => match.data.status === "past").map(
         m => <MatchItem key={m.id} matchPath={m.path} id={m.id} data={m.data} review/>
       )}
     </>
