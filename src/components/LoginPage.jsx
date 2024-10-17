@@ -3,8 +3,10 @@ import { Stack, Button, Box, Typography, TextField, Paper, Chip, Avatar } from '
 import { useNavigate } from 'react-router-dom';
 import PageTitle from './PageTitle';
 import { signInWithGoogle, signOut, useAuthState, useDbUpdate } from "../firebase";
+import { getStorage, ref, uploadString } from 'firebase/storage';
 
 const LoginPage = () => {
+  const [file, setFile] = useState(null);
   const [petType, setPetType] = useState('');
   const [name, setName] = useState('');
   const [age, setAge] = useState('');
@@ -34,10 +36,37 @@ const LoginPage = () => {
     }
   }, [auth]);
 
-  const handleGetStarted = () => {
+  const handleUpload = async () => {
+    if (file) {
+      return new Promise((accept, reject) => {
+        const storage = getStorage();
+        const path = `${Guser.uid}/${file.name}`;
+        const storageRef = ref(storage, path);
+        const reader = new FileReader();
+        reader.onload = () => {
+          const base64String = reader.result.split(',')[1];
+          uploadString(storageRef, base64String, 'base64')
+            .then((snapshot) => {
+              console.log(snapshot);
+              console.log('Uploaded a base64 string!');
+              accept(path);
+            })
+            .catch((error) => {
+              console.error('Upload failed:', error);
+              reject(error);
+            });
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  };
+
+  const handleGetStarted = async () => {
+    const imagePath = await handleUpload();
     update({
       petType, name, age, sex, breed, location, description,
-      traits: [...new Set(traits.split(',').map(e => e.trim()).filter(e => e.length))]
+      traits: [...new Set(traits.split(',').map(e => e.trim()).filter(e => e.length))],
+      image: "https://firebasestorage.googleapis.com/v0/b/nu-cs392-thomaswang.appspot.com/o/" + encodeURIComponent(imagePath) + "?alt=media",
     });
   };
 
@@ -171,6 +200,14 @@ const LoginPage = () => {
               Cat
             </Button>
           </Box>
+
+          <Typography variant="body1" sx={{ marginBottom: 2 }}>
+            Upload Profile Picture:
+          </Typography>
+
+          <input type="file" accept="image/*" onChange={(event) => {
+            setFile(event.target.files[0]);
+          }} />
 
           <TextField
             label="Name"
