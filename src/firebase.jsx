@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { initializeApp } from "firebase/app";
-import { getDatabase, onValue, ref, update, get, push } from 'firebase/database';
+import { getDatabase, onValue, ref, update, get } from 'firebase/database';
 import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
+import { getDistance } from './server';
 
 const firebaseConfig = {
   apiKey: "AIzaSyCaj-Y6Zscgs0DVZ7RSSZxY_b3oitQrOv8",
@@ -18,60 +19,109 @@ const firebaseConfig = {
 const firebase = initializeApp(firebaseConfig);
 const database = getDatabase(firebase);
 
-const _useDbData = (paths, { sync = true, postProcess = e => e } = {}) => {
-  const [data, setData] = useState([]);
-  const [error, setError] = useState([]);
+export const useDbData = (path, { sync = true } = {}) => {
+  const [data, setData] = useState();
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    setData(d => {
-      if (d.length === paths.length) return d;
-      if (d.length > paths.length)
-        return d.slice(0, paths.length);
-      else
-      return [...d, ...new Array(paths.length - d.length).fill(undefined)];
-    });
-    setError(e => {
-      if (e.length === paths.length) return e;
-      if (e.length > paths.length)
-        return e.slice(0, paths.length);
-      else
-      return [...e, ...new Array(paths.length - e.length).fill(null)];
-    });
-  }, [paths.length]);
-
-  useEffect(() => {
-    const callbacks = paths.map((p, idx) => {
-      const setMyData = myData => setData(d => d.map((e, i) => i === idx ? postProcess(myData) : e));
-      const setMyError = myError => setError(err => err.map((e, i) => i === idx ? myError : e));
-      if (!p) {
-        setMyData(null);
-        setMyError(null);
-      }
-      if (sync) {
-        return onValue(ref(database, "/walkbuddies" + p), (snapshot) => {
-          setMyData(snapshot.val());
-        }, (error) => {
-          setMyError(error);
-        });
-      } else {
-        get(ref(database, "/walkbuddies" + p)).then((snapshot) => {
-          setMyData(snapshot.val());
-        }).catch((error) => {
-          setMyError(error);
-        });
-      }
-    });
-    return (...args) => callbacks.forEach(f => f && f(...args));
-  }, [paths]);
+    if (sync) {
+      return onValue(ref(database, "/walkbuddies" + path), (snapshot) => {
+        setData(snapshot.val());
+      }, (error) => {
+        setError(error);
+      });
+    } else {
+      get(ref(database, "/walkbuddies" + path)).then((snapshot) => {
+        setData(snapshot.val());
+      }).catch((error) => {
+        setError(error);
+      });
+    }
+  }, [path]);
 
   return [data, error];
 };
 
-export const useDbData = (path, ...args) => {
-  const paths = useMemo(() => Array.isArray(path) ? path : [path], [path]);
-  const res = _useDbData(paths, ...args);
-  return Array.isArray(path) ? res : res.map(e => e[0]);
-}
+export const useProcessedDbData = (path, filters = [], { sync = true } = {}, customSortFn = null) => {
+  const [data, setData] = useState();
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    let dbRef = ref(database, "/walkbuddies" + path);
+
+
+    const processData = (rawData) => {
+      if (!rawData) return null;
+
+      let {Guser, user, err_user, auth, loading} = useAuthState()
+
+      const computeDistance = item => {
+        return getDistance(item.location, user.location);
+      }
+      // Convert Firebase object into an array of entries
+      let processedData = Object.entries(rawData).map((item) => {
+        // Convert preferences object to array of values
+        const preferences = Object.values(item.preferences);
+
+        // Add any computed custom attributes here
+        const newItem = {
+          ...item,
+          distance: computeDistance(item),
+          dogs: preferences.includes('Dogs'),
+          cats: preferences.includes('Cats'),
+          smallPets: preferences.includes('Small Pets'),
+          bigPets: preferences.includes('Big Pets'),
+          smallDogs: preferences.includes('Small Dogs'),
+          bigDogs: preferences.includes('Big Dogs'),
+          smallCats: preferences.includes('Small Cats'),
+          bigCats: preferences.includes('Big Cats'),
+          allBreeds: preferences.includes('All Breeds')
+        };
+        return newItem;
+      });
+
+      // Apply additional filters (union logic) after fetching data
+      if (filters.length > 0) {
+        processedData = processedData.filter(item => {
+          return filters.every(filter => {
+            // Handle custom filtering conditions
+            return item[filter.key] === filter.value;
+          });
+        });
+      }
+
+      // Sort the data based on the custom attribute
+      if (customSortFn) {
+        processedData.sort(customSortFn);
+      } else {
+        // Default sorting by the computed custom attribute
+        processedData.sort((a, b) => a.distance - b.distance); // Ascending order
+      }
+
+      return processedData;
+    };
+
+    if (sync) {
+      return onValue(dbRef, (snapshot) => {
+        const rawData = snapshot.val();
+        setData(processData(rawData));
+      }, (error) => {
+        setError(error);
+      });
+    } else {
+      get(dbRef).then((snapshot) => {
+        const rawData = snapshot.val();
+        setData(processData(rawData));
+      }).catch((error) => {
+        setError(error);
+      });
+    }
+  }, [path, filters, customSortFn]);
+
+  return [data, error];
+};
+
+
 
 const makeResult = (error) => {
   const timestamp = Date.now();
@@ -81,12 +131,10 @@ const makeResult = (error) => {
 
 export const useDbUpdate = (path) => {
   const [result, setResult] = useState();
-  const updateData = useCallback((value, { push: _push = false }={}) => {
-    const reference = _push ? push(ref(database, "/walkbuddies" + path)) : ref(database, "/walkbuddies" + path);
-    update(reference, value)
+  const updateData = useCallback((value) => {
+    update(ref(database, "/walkbuddies" + path), value)
     .then(() => setResult(makeResult()))
-    .catch((error) => setResult(makeResult(error)));
-    return reference;
+    .catch((error) => setResult(makeResult(error)))
   }, [database, path]);
 
   return [updateData, result];
@@ -106,7 +154,6 @@ export const useAuthState = () => {
   const [Guser, setGuser] = useState();
   const [user, err_user] = useDbData(`/owners/${Guser?.uid}`);
 
-  // useEffect(() => console.log(Guser), [Guser]);
   useEffect(() => (
     onAuthStateChanged(getAuth(firebase), setGuser)
   ), []);
