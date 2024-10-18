@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
@@ -11,6 +11,7 @@ import PageTitle from './PageTitle';
 import { Button, IconButton, Stack } from '@mui/material';
 import { Tune } from '@mui/icons-material';
 import { wrapProfile } from '../utils';
+import Filter from './Filter';
 
 const week = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -50,7 +51,7 @@ const PetWalker = ({walker}) => (
 
 const PetWalkerList = ({walkers}) => (
   <div className="walker-list">
-    {Object.entries(walkers).map(([walkerID, walker]) => (
+    {walkers.map(([walkerID, walker]) => (
       <Link to={`/walker/${walkerID}`} key={walkerID} style={{ textDecoration: 'none' }}>
         <PetWalker walker={walker} />
       </Link>
@@ -61,41 +62,41 @@ const PetWalkerList = ({walkers}) => (
 const SearchPage = () => {
   const [walkers, err_walkers] = useDbData("/walkers", {
     sync: false,
-    postProcess: obj => obj && Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, wrapProfile(v)]))
+    postProcess: obj => obj && Object.entries(obj).map(([k, v]) => [k, wrapProfile(v)])
   });
 
-  if (walkers === undefined)
-    return <PageTitle/>;
+  const [filteredWalkers, setFilteredWalkers] = useState(undefined);
+
   return (
     <>
       <PageTitle/>
       <div style={{ textAlign: "right", marginRight: 8 }}>
-        <Button endIcon={<Tune/>}>
-          Filter
-        </Button>
+        <Filter resource={walkers} setResource={setFilteredWalkers}/>
       </div>
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: 1
-        }}
-      >
+      {filteredWalkers &&
         <Box
           sx={{
-            width: '95%',
-            // maxHeight: '700px',
-            overflowY: 'auto',
-            padding: 2,
-            borderRadius: 2,
-            backgroundColor: '#f9f9f9',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 1
           }}
         >
-          <PetWalkerList walkers={walkers} />
+          <Box
+            sx={{
+              width: '95%',
+              // maxHeight: '700px',
+              overflowY: 'auto',
+              padding: 2,
+              borderRadius: 2,
+              backgroundColor: '#f9f9f9',
+            }}
+          >
+            <PetWalkerList walkers={filteredWalkers}/>
+          </Box>
         </Box>
-      </Box>
+      }
     </>
   );
 }
