@@ -7,5 +7,9 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
+    mockReset: true,
+    coverage: {
+      reporter: ['text', 'html'],
+    },
   }
 });
